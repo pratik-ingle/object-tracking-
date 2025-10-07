@@ -12,7 +12,7 @@ from PythonClient.NatNetClient import NatNetClient  # noqa: E402
 
 
 
-class ObjectTracker:
+class OptiTracker:
     """A class-based interface for tracking rigid bodies with OptiTrack NatNet."""
     
     def __init__(self, client_address: str = "192.168.74.4", server_address: str = "192.168.74.2", unicast: bool = True):
