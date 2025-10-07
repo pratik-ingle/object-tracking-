@@ -1,9 +1,12 @@
-from object_tracking.object_tracking import ObjectTracker
+from opti_tracker import OptiTracker
 import time
 
-# Method 1: Using the class directly
-print("=== Method 1: Direct class usage ===")
-tracker = ObjectTracker()
+CLIENT_IP = "192.168.74.5"
+SERVER_IP = "192.168.74.2"
+UNICAST = True
+
+
+tracker = OptiTracker(client_address=CLIENT_IP, server_address=SERVER_IP, unicast=UNICAST)
 tracker.start_streaming()
 
 try:

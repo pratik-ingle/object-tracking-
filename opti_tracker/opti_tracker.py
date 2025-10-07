@@ -1,14 +1,6 @@
-import argparse
-import sys
 import time
-import os
-
-# Ensure local imports work when running from other directories
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-if CURRENT_DIR not in sys.path:
-    sys.path.insert(0, CURRENT_DIR)
-
-from PythonClient.NatNetClient import NatNetClient  # noqa: E402
+import threading
+from .NatNetSDK import NatNetClient
 
 
 
@@ -39,7 +31,7 @@ class OptiTracker:
         Raises:
             RuntimeError: If streaming cannot be started
         """
-        import threading
+
         
         if self._is_streaming:
             print("Warning: Streaming already started. Call stop_streaming() first.")
