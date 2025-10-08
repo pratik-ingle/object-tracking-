@@ -1,6 +1,7 @@
 import time
 import threading
 from .NatNetSDK import NatNetClient
+import numpy as np
 
 
 
@@ -285,21 +286,42 @@ class OptiTracker:
         data = self.get_rigid_body_data(rigid_body_id, "position", timeout)
         return data["position"]
 
-    def get_relitive_position(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0):
+    def get_relitive_rigid_body_position(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0)->list | None:
         """Get relitive position data for a rigid body.
-        
-        Args:
-            rigid_body_id_1 (int): ID of the first rigid body to track
-            rigid_body_id_2 (int): ID of the second rigid body to track
-            timeout (float): Timeout in seconds
-            
+
         Returns:
-            list: Relitive position [x, y, z]
+            list | None: Relitive position [x, y, z] or None if unavailable
         """
-        position_1 = self.get_rigid_body_position(rigid_body_id_1, timeout)
-        position_2 = self.get_rigid_body_position(rigid_body_id_2, timeout)
+        try:
+            position_1 = self.get_rigid_body_position(rigid_body_id_1, timeout)
+            position_2 = self.get_rigid_body_position(rigid_body_id_2, timeout)
+        except (TimeoutError, RuntimeError):
+            return None
+
+        if position_1 is None or position_2 is None:
+            return None
+
         return [position_2[i] - position_1[i] for i in range(3)]
 
+    def get_relitive_rigid_body_position_local_coordinate_frame(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0):
+        try:
+            position_1 = self.get_rigid_body_position(rigid_body_id_1, timeout)
+            position_2 = self.get_rigid_body_position(rigid_body_id_2, timeout)
+            orientation_1 = self.get_rigid_body_orientation(rigid_body_id_1, timeout)
+        except (TimeoutError, RuntimeError):
+            return None
+
+        if position_1 is None or position_2 is None:
+            return None
+
+        relative_position_world = [position_2[i] - position_1[i] for i in range(3)]
+
+        R = self._quaternion_to_rotation_matrix(orientation_1)
+        R_inv = R.T  # For unit quaternions, inverse = transpose
+        relative_position_local = R_inv @ np.array(relative_position_world)
+
+        return relative_position_local
+        
     def get_rigid_body_orientation(self, rigid_body_id: int, timeout: float = 3.0):
         """Get orientation data for a rigid body.
         
@@ -313,7 +335,7 @@ class OptiTracker:
         data = self.get_rigid_body_data(rigid_body_id, "orientation", timeout)
         return data["orientation"]
 
-    def get_relitive_orientation(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0):
+    def get_relitive_rigid_body_orientation(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0):
         """Get relitive orientation data for a rigid body.
         
         Args:
@@ -366,6 +388,22 @@ class OptiTracker:
             time.sleep(0.1)
         
         return result
+
+    def _quaternion_to_rotation_matrix(self, quaternion):
+        """Convert quaternion [qx, qy, qz, qw] to rotation matrix"""
+        qx, qy, qz, qw = quaternion
+        
+        # Normalize quaternion
+        norm = np.sqrt(qx*qx + qy*qy + qz*qz + qw*qw)
+        qx, qy, qz, qw = qx/norm, qy/norm, qz/norm, qw/norm
+        
+        # Convert to rotation matrix
+        R = np.array([
+            [1 - 2*(qy*qy + qz*qz), 2*(qx*qy - qw*qz), 2*(qx*qz + qw*qy)],
+            [2*(qx*qy + qw*qz), 1 - 2*(qx*qx + qz*qz), 2*(qy*qz - qw*qx)],
+            [2*(qx*qz - qw*qy), 2*(qy*qz + qw*qx), 1 - 2*(qx*qx + qy*qy)]
+        ])
+        return R
 
     def is_streaming(self):
         """Check if streaming is active.
