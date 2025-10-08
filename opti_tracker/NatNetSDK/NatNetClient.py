@@ -92,6 +92,7 @@ class NatNetClient:
         self.rigid_body_listener = None
         self.new_frame_listener = None
         self.new_frame_with_data_listener = None
+        self.data_descriptions_listener = None
 
         # Set Application Name
         self.__application_name = "Not Set"
@@ -2097,6 +2098,11 @@ class NatNetClient:
             data_descs_str = data_descs.get_as_string()
             if print_level > 0:
                 print(" %s\n" % (data_descs_str))
+            if self.data_descriptions_listener is not None:
+                try:
+                    self.data_descriptions_listener(data_descs)
+                except Exception as e:
+                    print(f"data_descriptions_listener error: {e}")
 
         elif message_id == self.NAT_SERVERINFO:
             trace("Message ID : %3.1d NAT_SERVERINFO" % message_id)

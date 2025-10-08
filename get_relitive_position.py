@@ -1,9 +1,13 @@
 from opti_tracker import OptiTracker
 import time
+from homography import calculate_homography
 
 CLIENT_IP = "192.168.74.4"
 SERVER_IP = "192.168.74.2"
 UNICAST = True
+
+REFERENCE_OBJECT_ID = 1
+TRACKING_OBJECT_ID = 2
 
 
 tracker = OptiTracker(client_address=CLIENT_IP, server_address=SERVER_IP, unicast=UNICAST)
@@ -13,9 +17,13 @@ try:
     # Now you can call methods multiple times efficiently
     while True:  # Example loop
         # Get only position
-
-        position = tracker.get_position(rigid_body_id=3)
-        print(f"Position: {position}")
+        
+        static_position = tracker.get_rigid_body_position(rigid_body_id=REFERENCE_OBJECT_ID)
+        tracking_position = tracker.get_rigid_body_position(rigid_body_id=TRACKING_OBJECT_ID)
+        relarive_positions =[]
+        for coord in zip(static_position, tracking_position):
+            relarive_positions.append(coord[1] - coord[0])
+        print(f"Relative positions: {relarive_positions}")
         
         # Get only orientation
         # orientation = tracker.get_orientation(rigid_body_id=3)

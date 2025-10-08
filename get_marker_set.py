@@ -13,31 +13,28 @@ try:
     # Now you can call methods multiple times efficiently
     while True:  # Example loop
         # Get only position
+        # position = tracker.get_position(rigid_body_id=3)
+        # print(f"Position: {position}")
+        
+        rigid_bodies = tracker.list_available_rigid_bodies()
+        print(f"Available rigid bodies: {len(rigid_bodies)}")
+        for rb in rigid_bodies:
+            print(f"ID: {rb['rigid_body_id']}, Position: {rb['position']}, Valid: {rb['tracking_valid']}\n")
 
-        position = tracker.get_position(rigid_body_id=3)
-        print(f"Position: {position}")
-        
-        # Get only orientation
-        # orientation = tracker.get_orientation(rigid_body_id=3)
-        # print(f"Orientation: {orientation}")
-        
-        # Get both position and orientation
-        # pos, orient = tracker.get_pose(rigid_body_id=3)
-        # print(f"Pose: pos={pos}, orient={orient}")
-        
-        time.sleep(0.5)  # Small delay between calls
+        marker_sets = tracker.get_marker_sets()
+        print(f"Marker sets: {marker_sets}\n")
+
+        unlabeled_markers = tracker.get_unlabeled_markers()
+        print(f"Unlabeled markers: {unlabeled_markers}\n")
+
+        labeled_markers = tracker.get_labeled_markers()
+        print(f"Labeled markers: {labeled_markers}\n")
+
+        time.sleep(0.5) 
         
 finally:
     # Always stop the stream when done
     tracker.stop_streaming()
-
-# print("\n=== Method 2: Using context manager ===")
-# # Method 2: Using context manager (automatic cleanup)
-# with ObjectTracker() as tracker:
-#     for i in range(3):
-#         position = tracker.get_position(rigid_body_id=3)
-#         print(f"Position {i}: {position}")
-#         time.sleep(0.1)
 
 # print("\n=== Method 3: List available rigid bodies ===")
 # # Method 3: List all available rigid bodies
