@@ -2,12 +2,12 @@ from opti_tracker import OptiTracker
 import time
 from homography import calculate_homography
 
-CLIENT_IP = "192.168.74.4"
-SERVER_IP = "192.168.74.2"
+CLIENT_IP = "192.168.74.2"
+SERVER_IP = "192.168.74.3"
 UNICAST = True
 
 REFERENCE_OBJECT_ID = 1
-TRACKING_OBJECT_ID = 2
+TRACKING_OBJECT_ID = 4
 
 
 tracker = OptiTracker(client_address=CLIENT_IP, server_address=SERVER_IP, unicast=UNICAST)

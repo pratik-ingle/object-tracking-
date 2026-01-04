@@ -2,12 +2,12 @@ from opti_tracker import OptiTracker
 import time
 from homography import calculate_homography
 
-CLIENT_IP = "192.168.74.4"
-SERVER_IP = "192.168.74.2"
+CLIENT_IP = "192.168.74.2"
+SERVER_IP = "192.168.74.3"
 UNICAST = True
 
 REFERENCE_OBJECT_ID = 1
-TRACKING_OBJECT_ID = 4
+TRACKING_OBJECT_ID = 3
 
 
 tracker = OptiTracker(client_address=CLIENT_IP, server_address=SERVER_IP, unicast=UNICAST)
@@ -18,8 +18,22 @@ try:
     while True:  # Example loop
         # Get only position
         
-        relative_position_world = tracker.get_relitive_rigid_body_position(rigid_body_id_1=REFERENCE_OBJECT_ID, rigid_body_id_2=TRACKING_OBJECT_ID)
-        print(f"Relative position world: {relative_position_world}")
+       # Get the reference object's orientation
+        orientation_1 = tracker.get_rigid_body_orientation(REFERENCE_OBJECT_ID)
+        print(f"Reference object quaternion: {orientation_1}")
+
+        # Get the rotation matrix
+        R = tracker._quaternion_to_rotation_matrix(orientation_1)
+        print(f"Rotation matrix:\n{R}")
+
+        # Check the coordinate frame axes
+        print(f"X-axis (first column): {R[:, 0]}")
+        print(f"Y-axis (second column): {R[:, 1]}")
+        print(f"Z-axis (third column): {R[:, 2]}")
+       
+       
+        # relative_position_world = tracker.get_relitive_rigid_body_position(rigid_body_id_1=REFERENCE_OBJECT_ID, rigid_body_id_2=TRACKING_OBJECT_ID)
+        # print(f"Relative position world: {relative_position_world}")
         
         relative_position_local = tracker.get_relitive_rigid_body_position_local_coordinate_frame(rigid_body_id_1=REFERENCE_OBJECT_ID, rigid_body_id_2=TRACKING_OBJECT_ID)
         print(f"Relative position local: {relative_position_local}")

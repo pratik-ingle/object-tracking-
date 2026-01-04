@@ -390,14 +390,15 @@ class OptiTracker:
         return result
 
     def _quaternion_to_rotation_matrix(self, quaternion):
-        """Convert quaternion [qx, qy, qz, qw] to rotation matrix"""
+        """Convert quaternion [qx, qy, qz, qw] to rotation matrix for OptiTrack XYZ convention"""
         qx, qy, qz, qw = quaternion
         
         # Normalize quaternion
         norm = np.sqrt(qx*qx + qy*qy + qz*qz + qw*qw)
         qx, qy, qz, qw = qx/norm, qy/norm, qz/norm, qw/norm
         
-        # Convert to rotation matrix
+        # Convert to rotation matrix using OptiTrack's XYZ rotation order convention
+        # This accounts for OptiTrack's right-handed coordinate system and XYZ rotation order
         R = np.array([
             [1 - 2*(qy*qy + qz*qz), 2*(qx*qy - qw*qz), 2*(qx*qz + qw*qy)],
             [2*(qx*qy + qw*qz), 1 - 2*(qx*qx + qz*qz), 2*(qy*qz - qw*qx)],

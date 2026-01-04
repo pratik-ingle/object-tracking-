@@ -1,8 +1,8 @@
 from opti_tracker import OptiTracker
 import time
 
-CLIENT_IP = "192.168.74.4"
-SERVER_IP = "192.168.74.2"
+CLIENT_IP = "192.168.74.2"
+SERVER_IP = "192.168.74.3"
 UNICAST = True
 
 
@@ -14,7 +14,7 @@ try:
     while True:  # Example loop
         # Get only position
 
-        position = tracker.get_position(rigid_body_id=3)
+        position = tracker.get_rigid_body_position(rigid_body_id=4)
         print(f"Position: {position}")
         
         # Get only orientation
