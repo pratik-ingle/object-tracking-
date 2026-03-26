@@ -1,7 +1,7 @@
 from opti_tracker import OptiTracker
 import time
 
-CLIENT_IP = "192.168.74.2"
+CLIENT_IP = "192.168.74.8"
 SERVER_IP = "192.168.74.3"
 UNICAST = True
 
@@ -10,11 +10,15 @@ tracker = OptiTracker(client_address=CLIENT_IP, server_address=SERVER_IP, unicas
 tracker.start_streaming()
 
 try:
+    # List available rigid bodies first
+    rigid_bodies = tracker.list_available_rigid_bodies()
+    print(f"Available rigid bodies: {[rb['rigid_body_id'] for rb in rigid_bodies]}")
+
     # Now you can call methods multiple times efficiently
     while True:  # Example loop
         # Get only position
 
-        position = tracker.get_rigid_body_position(rigid_body_id=4)
+        position = tracker.get_rigid_body_position(rigid_body_id=3)
         print(f"Position: {position}")
         
         # Get only orientation

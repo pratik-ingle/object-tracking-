@@ -305,14 +305,17 @@ class OptiTracker:
 
     def get_relitive_rigid_body_position_local_coordinate_frame(self, rigid_body_id_1: int, rigid_body_id_2: int, timeout: float = 3.0):
         try:
-            position_1 = self.get_rigid_body_position(rigid_body_id_1, timeout)
-            position_2 = self.get_rigid_body_position(rigid_body_id_2, timeout)
-            orientation_1 = self.get_rigid_body_orientation(rigid_body_id_1, timeout)
+            data_1 = self.get_rigid_body_data(rigid_body_id_1, "both", timeout)
+            data_2 = self.get_rigid_body_data(rigid_body_id_2, "position", timeout)
         except (TimeoutError, RuntimeError):
             return None
 
-        if position_1 is None or position_2 is None:
+        if not data_1["tracking_valid"] or not data_2["tracking_valid"]:
             return None
+
+        position_1 = data_1["position"]
+        position_2 = data_2["position"]
+        orientation_1 = data_1["orientation"]
 
         relative_position_world = [position_2[i] - position_1[i] for i in range(3)]
 
