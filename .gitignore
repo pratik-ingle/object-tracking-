@@ -3,3 +3,5 @@ opti_tracker.egg-info
 build
 __pycache__
 venv_optitrack_object_tracker
+.env
+.claude

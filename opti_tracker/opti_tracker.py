@@ -1,14 +1,14 @@
+import os
 import time
 import threading
 from .NatNetSDK import NatNetClient
 import numpy as np
 
 
-
 class OptiTracker:
     """A class-based interface for tracking rigid bodies with OptiTrack NatNet."""
-    
-    def __init__(self, client_address: str = "192.168.74.4", server_address: str = "192.168.74.2", unicast: bool = True):
+
+    def __init__(self, client_address: str = None, server_address: str = None, unicast: bool = None):
         """Initialize the rigid body tracker.
         
         Args:
@@ -16,9 +16,16 @@ class OptiTracker:
             server_address (str): NatNet server IP address
             unicast (bool): Use unicast instead of multicast
         """
-        self.client_address = client_address
-        self.server_address = server_address
-        self.unicast = unicast
+        self.client_address = client_address or os.environ.get("OPTITRACK_CLIENT_IP")
+        self.server_address = server_address or os.environ.get("OPTITRACK_SERVER_IP")
+        unicast_env = os.environ.get("OPTITRACK_UNICAST", "true").lower() != "false"
+        self.unicast = unicast if unicast is not None else unicast_env
+
+        if not self.client_address or not self.server_address:
+            raise ValueError(
+                "client_address and server_address must be provided either as arguments "
+                "or via OPTITRACK_CLIENT_IP / OPTITRACK_SERVER_IP environment variables."
+            )
         
         # Streaming state
         self._client = None
